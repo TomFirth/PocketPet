@@ -3,14 +3,20 @@
 The database needs to store pet state, player preferences, and historical data.
 
 ## Local Storage (MVP)
-For the initial release, data will be stored locally on the device using **AsyncStorage** or **SQLite**.
+PocketPet uses **AsyncStorage** for local data persistence. This allows the game to be played offline while ensuring that progress is saved across sessions.
+
+### `Persistence.ts` Utility
+A dedicated utility handles saving and loading the `PetStats` object. Data is stored as a JSON string under the key `@PocketPet:stats`.
+
+### Auto-save Strategy
+- **Backgrounding**: Stats are saved whenever the app moves to the background or becomes inactive (using `AppState`).
+- **Periodic Save**: Stats are automatically saved every 30 seconds during active gameplay.
+- **Manual Triggers**: Critical actions or transitions can also trigger a save.
 
 ### `PetState` Schema
 Stored as a JSON object:
 ```typescript
 {
-  id: string;
-  species: string;
   hunger: number;
   thirst: number;
   happiness: number;
@@ -19,7 +25,12 @@ Stored as a JSON object:
   xp: number;
   level: number;
   lastUpdate: number; // Unix timestamp
-  unlockedActions: string[]; // ['food', 'water', etc.]
+  hasEverHungry: boolean;
+  hasEverThirsty: boolean;
+  hasUsedFoodOrWater: boolean;
+  lastToyTime: number;
+  lastTreatTime: number;
+  lastCleanTime: number;
 }
 ```
 

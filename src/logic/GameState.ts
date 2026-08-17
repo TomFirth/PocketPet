@@ -21,6 +21,7 @@ export interface PetStats {
   lastToyTime: number;
   lastTreatTime: number;
   lastCleanTime: number;
+  isSleeping: boolean;
 }
 
 export const INITIAL_STATS: PetStats = {
@@ -39,4 +40,5 @@ export const INITIAL_STATS: PetStats = {
   lastToyTime: 0,
   lastTreatTime: 0,
   lastCleanTime: 0,
+  isSleeping: false,
 };

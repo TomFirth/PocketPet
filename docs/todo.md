@@ -3,20 +3,18 @@
 ## Phase 1: MVP (Core Loop & Persistence)
 *Focus: A playable, persistent local experience.*
 
-- [ ] **Data Persistence**
-    - [ ] Implement `AsyncStorage` to save/load `PetStats`.
-    - [ ] Auto-save state on app background/close.
-- [ ] **Offline Progress**
-    - [ ] Calculate stat decay based on time elapsed since `lastUpdate` when the app starts.
-- [ ] **Game Loop Refinement**
-    - [ ] Move decay logic from `GameScreen` to a dedicated `GameLoop` controller.
-    - [ ] Implement sleep cycles (Energy decay/recovery).
-- [ ] **UI/UX Polish**
-    - [ ] Add animations for leveling up.
-    - [ ] Improve the "Stroking" gesture feedback.
-    - [ ] Add sound effects for interactions (Feeding, Cleaning).
-- [ ] **Bug Fixes**
-    - [ ] Ensure deltas don't stack weirdly during rapid updates.
+- [x] **Data Persistence**
+    - [x] Implement `AsyncStorage` to save/load `PetStats`.
+    - [x] Auto-save state on app background/close.
+- [x] **Offline Progress**
+    - [x] Calculate stat decay based on time elapsed since `lastUpdate` when the app starts.
+- [x] **Game Loop Refinement**
+    - [x] Move decay logic from `GameScreen` to a dedicated `GameLoop` controller.
+    - [x] Implement sleep cycles (Energy decay/recovery).
+- [x] **UI/UX Polish**
+    - [x] Improve the "Stroking" gesture feedback.
+- [x] **Bug Fixes**
+    - [x] Ensure deltas don't stack weirdly during rapid updates.
 
 ## Phase 2: Enhanced Interactions & Personality
 *Focus: Making the pet feel "alive" through sensors and varied responses.*

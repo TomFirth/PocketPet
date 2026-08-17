@@ -271,6 +271,26 @@ export const gameStyles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
+
+  sleepOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 50, 0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 105,
+  },
+
+  sleepText: {
+    fontSize: 80,
+    color: 'white',
+    opacity: 0.8,
+  },
+
+  heart: {
+    position: 'absolute',
+    fontSize: 40,
+    zIndex: 200,
+  },
 });
 
 

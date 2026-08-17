@@ -95,3 +95,21 @@ To learn more about React Native, take a look at the following resources:
 - [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
 - [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
 - [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+
+# Permissions & Hardware Access
+
+PocketPet leverages various device sensors and system permissions to create an immersive experience. While the core MVP operates primarily offline with minimal requirements, future features will request the following:
+
+## Core & Utility (Required/Upcoming)
+- **Local Storage (AsyncStorage)**: Required to save your pet's state and progress.
+- **Internet / Network State**: Used for checking cloud sync status, fetching real-world weather, and potential social features.
+- **Notifications**: Optional permission to remind you when your pet is hungry or needs attention.
+
+## Interaction Sensors (Phase 2)
+- **Microphone**: Used to detect loud ambient noises, allowing your pet to react (e.g., getting scared or hiding). No audio is recorded or transmitted.
+- **Motion Sensors (Accelerometer/Gyroscope)**: Allows the pet to feel when you are shaking the device or moving gently.
+
+## Long-Term Vision (Phase 4)
+- **Health Data (Physical Activity)**: Integration with Google Fit / Apple Health to track steps. Walking in the real world can help recover your pet's energy!
+- **Location (Fine/Coarse)**: Used to synchronize the pet's environment with your local real-world weather and time of day.
+- **Camera**: Required for the AR Mode, allowing you to see and play with your pet in your actual room.

@@ -26,11 +26,16 @@ export const ACTIONS = [
   { id: 'water', label: '💧', color: '#4D96FF' },
   { id: 'toys', label: '🧸', color: '#6BCB77' },
   { id: 'clean', label: '🧼', color: '#1ABC9C' },
-  { id: 'treats', label: '🍬', color: '#FFD93D' },
+  { id: 'sleep', label: '💤', color: '#9B59B6' },
   { id: 'status', label: '📊', color: '#FF9F43' },
+  { id: 'treats', label: '🍬', color: '#FFD93D' },
 ];
 
 export const isActionLocked = (id: string, stats: PetStats): boolean => {
+  if (stats.isSleeping && id !== 'sleep' && id !== 'status') {
+    return true;
+  }
+
   switch (id) {
     case 'food':
       return !stats.hasEverHungry;
@@ -44,6 +49,8 @@ export const isActionLocked = (id: string, stats: PetStats): boolean => {
       return stats.level < 10;
     case 'status':
       return false; // Always unlocked for testing
+    case 'sleep':
+      return false;
     default:
       return false;
   }
@@ -74,6 +81,10 @@ export const MenuWheel: React.FC<MenuWheelProps> = ({
             const y = Math.sin(angle) * radius;
 
             const locked = isActionLocked(action.id, stats);
+            let displayLabel = action.label;
+            if (action.id === 'sleep' && stats.isSleeping) {
+                displayLabel = '⏰';
+            }
 
             return (
               <TouchableOpacity
@@ -92,7 +103,7 @@ export const MenuWheel: React.FC<MenuWheelProps> = ({
                   },
                 ]}
               >
-                <Text style={styles.label}>{locked ? '🔒' : action.label}</Text>
+                <Text style={styles.label}>{locked ? '🔒' : displayLabel}</Text>
               </TouchableOpacity>
             );
           })}
