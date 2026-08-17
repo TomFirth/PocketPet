@@ -154,6 +154,35 @@ export const gameStyles = StyleSheet.create({
     fontSize: 30,
   },
 
+  miniStatsContainer: {
+    position: 'absolute',
+    top: 60,
+    left: 20,
+    width: 100,
+    zIndex: 110,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    padding: 8,
+    borderRadius: 10,
+  },
+
+  miniStatBar: {
+    height: 4,
+    backgroundColor: '#eee',
+    borderRadius: 2,
+    marginTop: 4,
+    overflow: 'hidden',
+  },
+
+  miniStatFill: {
+    height: '100%',
+  },
+
+  miniStatLabel: {
+    color: 'white',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+
   toy: {
     position: 'absolute',
     width: 50,

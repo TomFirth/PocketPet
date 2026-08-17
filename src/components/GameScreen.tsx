@@ -87,6 +87,31 @@ export const GameScreen = () => {
     new Animated.ValueXY({ x: width / 2, y: height / 2 })
   ).current;
 
+  // TICKING LOGIC
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStats(prev => {
+        const now = Date.now();
+        const elapsed = (now - prev.lastUpdate) / 1000; // seconds
+
+        // Decay rates (per second)
+        // Hunger: 100 points in 24h = 100 / (24 * 3600)
+        // Thirst: 100 points in 16h = 100 / (16 * 3600)
+        const hungerDecay = (100 / (24 * 3600)) * elapsed;
+        const thirstDecay = (100 / (16 * 3600)) * elapsed;
+
+        return {
+          ...prev,
+          hunger: Math.max(0, prev.hunger - hungerDecay),
+          thirst: Math.max(0, prev.thirst - thirstDecay),
+          lastUpdate: now,
+        };
+      });
+    }, 5000); // Update internal state every 5s
+
+    return () => clearInterval(interval);
+  }, []);
+
   // Unlock logic
   useEffect(() => {
     if (!stats.hasEverHungry && stats.hunger < 50) {
@@ -111,7 +136,7 @@ export const GameScreen = () => {
         next = Math.max(0, Math.min(100, next));
       }
 
-      return { ...prev, [key]: next };
+      return { ...prev, [key]: next, lastUpdate: Date.now() };
     });
 
     setDeltas(prev => ({ ...prev, [key]: amount }));
@@ -131,14 +156,14 @@ export const GameScreen = () => {
         Alert.alert('Level Up!', `Now level ${level}`);
       }
 
-      return { ...prev, xp, level };
+      return { ...prev, xp, level, lastUpdate: Date.now() };
     });
 
     setDeltas(prev => ({ ...prev, xp: amount }));
     setTimeout(() => setDeltas(prev => ({ ...prev, xp: null })), 1000);
   };
 
-  const panResponder = useRef(
+  const toyPanResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
 
@@ -176,11 +201,37 @@ export const GameScreen = () => {
     })
   ).current;
 
-  const handleAction = (actionId: string) => {
-    const now = Date.now();
-    const oneHour = 60 * 60 * 1000;
-    const oneDay = 24 * 60 * 60 * 1000;
+  // STROKING GESTURE
+  const strokePanResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: (_, g) => Math.hypot(g.dx, g.dy) > 10,
+      onPanResponderMove: (_, g) => {
+        // Detect continuous stroking motion
+        const speed = Math.hypot(g.vx, g.vy);
+        if (speed > 0.5) {
+          // throttling would be good here, but for now we just add points
+        }
+      },
+      onPanResponderRelease: (_, g) => {
+        const dist = Math.hypot(g.dx, g.dy);
+        if (dist > 50) {
+          updateStat('happiness', 5);
+          updateStat('relationship', 1);
+          addXP(10);
+          Toast.show({
+            type: 'info',
+            text1: 'Stroking',
+            text2: 'Your pet feels loved! ❤️',
+            position: 'bottom',
+            visibilityTime: 1000,
+          });
+        }
+      },
+    })
+  ).current;
 
+  const handleAction = (actionId: string) => {
     switch (actionId) {
       case 'status':
         setStatusVisible(true);
@@ -195,7 +246,7 @@ export const GameScreen = () => {
         });
         break;
       case 'food':
-        updateStat('hunger', 20);
+        updateStat('hunger', 25);
         updateStat('relationship', 1);
         addXP(10);
         setStats(prev => ({ ...prev, hasUsedFoodOrWater: true }));
@@ -206,7 +257,7 @@ export const GameScreen = () => {
         });
         break;
       case 'water':
-        updateStat('thirst', 20);
+        updateStat('thirst', 40);
         updateStat('relationship', 1);
         addXP(10);
         setStats(prev => ({ ...prev, hasUsedFoodOrWater: true }));
@@ -254,29 +305,30 @@ export const GameScreen = () => {
         />
       </View>
 
-      {/* TOUCH LAYER */}
+      {/* MINI STATS */}
+      <View style={styles.miniStatsContainer}>
+        <Text style={styles.miniStatLabel}>Hunger</Text>
+        <View style={styles.miniStatBar}>
+          <View style={[styles.miniStatFill, { width: `${stats.hunger}%`, backgroundColor: stats.hunger < 20 ? '#F44336' : '#4CAF50' }]} />
+        </View>
+        <View style={{ height: 5 }} />
+        <Text style={styles.miniStatLabel}>Thirst</Text>
+        <View style={styles.miniStatBar}>
+          <View style={[styles.miniStatFill, { width: `${stats.thirst}%`, backgroundColor: stats.thirst < 20 ? '#F44336' : '#2196F3' }]} />
+        </View>
+      </View>
+
+      {/* TOUCH LAYER (STROKING) */}
       <View
         style={styles.touchLayer}
+        {...strokePanResponder.panHandlers}
         pointerEvents={activeToy ? 'none' : 'box-none'}
-        onStartShouldSetResponder={() => true}
-        onTouchStart={() => {
-          updateStat('happiness', 1);
-          updateStat('relationship', 0.5);
-          addXP(2);
-          Toast.show({
-            type: 'info',
-            text1: 'Stroking',
-            text2: 'Your pet feels loved! ❤️',
-            position: 'bottom',
-            visibilityTime: 1000,
-          });
-        }}
       />
 
       {/* TOY */}
       {activeToy && (
         <Animated.View
-          {...panResponder.panHandlers}
+          {...toyPanResponder.panHandlers}
           style={[styles.toy, dynamicToyStyle]}
         >
           <Text style={styles.toyEmoji}>🧸</Text>
