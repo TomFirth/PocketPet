@@ -5,6 +5,7 @@ import { petStyles as styles } from '../styles/Styles';
 interface PetProps {
   lookAt?: { x: number; y: number };
   mouthOpen?: boolean;
+  mood?: 'happy' | 'scared' | 'dizzy' | 'neutral';
   assets?: {
     fur?: any;
     eyeLeft?: any;
@@ -19,19 +20,21 @@ interface PetProps {
 export const Pet: React.FC<PetProps> = ({
   lookAt = { x: 0, y: 0 },
   mouthOpen = false,
+  mood = 'neutral',
   assets,
 }) => {
   const lx = lookAt?.x ?? 0;
   const ly = lookAt?.y ?? 0;
 
-  const EYE_BASE_SENSITIVITY = 4;
-  const PUPIL_SENSITIVITY = 15;
+  const EYE_BASE_SENSITIVITY = mood === 'scared' ? 2 : 4;
+  const PUPIL_SENSITIVITY = mood === 'scared' ? 5 : 15;
   const CONVERGENCE = 5;
 
   const leftEyeStyle = {
     transform: [
       { translateX: lx * EYE_BASE_SENSITIVITY },
       { translateY: ly * EYE_BASE_SENSITIVITY },
+      { scale: mood === 'scared' ? 1.2 : 1 },
     ],
   };
 
@@ -39,8 +42,30 @@ export const Pet: React.FC<PetProps> = ({
     transform: [
       { translateX: lx * EYE_BASE_SENSITIVITY },
       { translateY: ly * EYE_BASE_SENSITIVITY },
+      { scale: mood === 'scared' ? 1.2 : 1 },
     ],
   };
+
+  const dizzyRotation = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (mood === 'dizzy') {
+      Animated.loop(
+        Animated.timing(dizzyRotation, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: true,
+        })
+      ).start();
+    } else {
+      dizzyRotation.setValue(0);
+    }
+  }, [mood]);
+
+  const rotateInterpolation = dizzyRotation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
 
   const leftPupilStyle = {
     transform: [
@@ -49,6 +74,7 @@ export const Pet: React.FC<PetProps> = ({
           lx * PUPIL_SENSITIVITY + (1 - Math.abs(lx)) * CONVERGENCE,
       },
       { translateY: ly * PUPIL_SENSITIVITY + 10 },
+      { rotate: mood === 'dizzy' ? rotateInterpolation : '0deg' },
     ],
   };
 
@@ -59,6 +85,7 @@ export const Pet: React.FC<PetProps> = ({
           lx * PUPIL_SENSITIVITY - (1 - Math.abs(lx)) * CONVERGENCE,
       },
       { translateY: ly * PUPIL_SENSITIVITY + 10 },
+      { rotate: mood === 'dizzy' ? rotateInterpolation : '0deg' },
     ],
   };
 

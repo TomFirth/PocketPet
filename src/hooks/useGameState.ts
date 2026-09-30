@@ -111,6 +111,22 @@ export const useGameState = () => {
     }));
   }, []);
 
+  const setMood = useCallback((mood: 'happy' | 'scared' | 'dizzy' | 'neutral') => {
+    setStats(prev => ({
+      ...prev,
+      mood,
+      lastUpdate: Date.now()
+    }));
+  }, []);
+
+  const updateName = useCallback((name: string) => {
+    setStats(prev => ({
+      ...prev,
+      name,
+      lastUpdate: Date.now()
+    }));
+  }, []);
+
   const setStatsManually = useCallback((updater: (prev: PetStats) => PetStats) => {
     setStats(prev => {
         const next = updater(prev);
@@ -123,6 +139,8 @@ export const useGameState = () => {
     updateStat,
     addXP,
     toggleSleep,
+    setMood,
+    updateName,
     setStatsManually,
     isLoaded,
   };

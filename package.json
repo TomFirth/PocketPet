@@ -7,17 +7,22 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "build:android": "./build-android.sh"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^2.1.2",
     "@react-native/new-app-screen": "0.86.0",
     "react": "19.2.3",
     "react-native": "0.86.0",
     "react-native-gesture-handler": "^3.0.2",
     "react-native-reanimated": "^4.5.0",
     "react-native-safe-area-context": "^5.8.0",
+    "react-native-sensors": "^7.3.6",
+    "react-native-sound-level": "^1.2.0",
     "react-native-toast-message": "^2.3.3",
-    "react-native-worklets": "^0.10.1"
+    "react-native-worklets": "^0.10.1",
+    "rxjs": "^7.8.1"
   },
   "devDependencies": {
     "@babel/core": "^8.0.1",

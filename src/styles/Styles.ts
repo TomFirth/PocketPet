@@ -291,6 +291,23 @@ export const gameStyles = StyleSheet.create({
     fontSize: 40,
     zIndex: 200,
   },
+
+  petNameContainer: {
+    position: 'absolute',
+    top: 150,
+    width: '100%',
+    alignItems: 'center',
+    zIndex: 50,
+  },
+
+  petNameText: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: 'white',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10,
+  },
 });
 
 

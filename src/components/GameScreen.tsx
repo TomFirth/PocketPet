@@ -15,9 +15,11 @@ import Toast from 'react-native-toast-message';
 import { gameStyles as styles } from '../styles/Styles';
 import { Pet } from './Pet';
 import { MenuWheel } from './MenuWheel';
+import { SettingsModal } from './SettingsModal';
 import { PetStats } from '../logic/GameState';
 import { PET_THEMES } from '../logic/PetAssets';
 import { useGameState } from '../hooks/useGameState';
+import { useSensors } from '../hooks/useSensors';
 
 const { width, height } = Dimensions.get('window');
 
@@ -82,9 +84,10 @@ const StatRow = ({
 };
 
 export const GameScreen = () => {
-  const { stats, updateStat, addXP, toggleSleep, setStatsManually, isLoaded } = useGameState();
+  const { stats, updateStat, addXP, toggleSleep, setMood, updateName, setStatsManually, isLoaded } = useGameState();
   const [menuVisible, setMenuVisible] = useState(false);
   const [statusVisible, setStatusVisible] = useState(false);
+  const [settingsVisible, setSettingsVisible] = useState(false);
   const [mouthOpen, setMouthOpen] = useState(false);
   const [activeToy, setActiveToy] = useState<{ x: number; y: number } | null>(null);
   const [lookAt, setLookAt] = useState({ x: 0, y: 0 });
@@ -99,6 +102,20 @@ export const GameScreen = () => {
 
   const zzzAnim = useRef(new Animated.Value(0)).current;
   const petBounce = useRef(new Animated.Value(1)).current;
+  const screenShake = useRef(new Animated.Value(0)).current;
+
+  // Sensor Integration
+  useSensors((mood) => {
+    setMood(mood);
+    if (mood === 'scared') {
+      Animated.sequence([
+        Animated.timing(screenShake, { toValue: 10, duration: 50, useNativeDriver: true }),
+        Animated.timing(screenShake, { toValue: -10, duration: 50, useNativeDriver: true }),
+        Animated.timing(screenShake, { toValue: 10, duration: 50, useNativeDriver: true }),
+        Animated.timing(screenShake, { toValue: 0, duration: 50, useNativeDriver: true }),
+      ]).start();
+    }
+  }, isLoaded && !stats.isSleeping);
 
   // Sleep animation
   useEffect(() => {
@@ -338,12 +355,18 @@ export const GameScreen = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, { transform: [{ translateX: screenShake }] }]}>
+      {/* PET NAME DISPLAY */}
+      <View style={styles.petNameContainer}>
+        <Text style={styles.petNameText}>{stats.name}</Text>
+      </View>
+
       {/* PET LAYER */}
       <Animated.View style={[styles.petLayer, { transform: [{ scale: petBounce }] }]}>
         <Pet
           lookAt={stats.isSleeping ? { x: 0, y: 0.2 } : lookAt}
           mouthOpen={stats.isSleeping ? false : mouthOpen}
+          mood={stats.mood}
           assets={PET_THEMES[species]}
         />
         {stats.isSleeping && (
@@ -419,15 +442,7 @@ export const GameScreen = () => {
 
       <TouchableOpacity
         style={styles.settingsButton}
-        onPress={() => {
-          if (stats.isSleeping) return;
-          const list = Object.keys(PET_THEMES).filter(
-            s => PET_THEMES[s].fur
-          );
-          const i =
-            (list.indexOf(species) + 1) % list.length;
-          setSpecies(list[i]);
-        }}
+        onPress={() => setSettingsVisible(true)}
       >
         <Text style={styles.iconText}>⚙️</Text>
       </TouchableOpacity>
@@ -453,7 +468,7 @@ export const GameScreen = () => {
           onPress={() => setStatusVisible(false)}
         >
           <View style={styles.statusCard}>
-            <Text style={styles.statusTitle}>Pet Status {stats.isSleeping ? '(Sleeping)' : ''}</Text>
+            <Text style={styles.statusTitle}>{stats.name}'s Status {stats.isSleeping ? '(Sleeping)' : ''}</Text>
 
             <StatRow label="Hunger" value={Math.floor(stats.hunger)} delta={deltas.hunger ?? null} />
             <StatRow label="Thirst" value={Math.floor(stats.thirst)} delta={deltas.thirst ?? null} />
@@ -473,6 +488,14 @@ export const GameScreen = () => {
         </TouchableOpacity>
       </Modal>
 
-    </View>
+      {/* SETTINGS MODAL */}
+      <SettingsModal
+        isVisible={settingsVisible}
+        onClose={() => setSettingsVisible(false)}
+        currentName={stats.name}
+        onUpdateName={updateName}
+      />
+
+    </Animated.View>
   );
 };

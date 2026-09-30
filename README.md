@@ -106,7 +106,7 @@ PocketPet leverages various device sensors and system permissions to create an i
 - **Notifications**: Optional permission to remind you when your pet is hungry or needs attention.
 
 ## Interaction Sensors (Phase 2)
-- **Microphone**: Used to detect loud ambient noises, allowing your pet to react (e.g., getting scared or hiding). No audio is recorded or transmitted.
+- **Microphone**: Used to detect loud ambient noises, allowing your pet to react (e.g., getting scared or hiding). No audio is recorded or transmitted. *Requires runtime permission on Android and iOS.*
 - **Motion Sensors (Accelerometer/Gyroscope)**: Allows the pet to feel when you are shaking the device or moving gently.
 
 ## Long-Term Vision (Phase 4)
